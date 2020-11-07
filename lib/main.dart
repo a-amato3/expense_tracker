@@ -1,5 +1,7 @@
+import './widgets/new_transactions.dart';
 import 'package:flutter/material.dart';
-import './widgets/user_transactions.dart';
+import './models/transaction.dart';
+import 'widgets/transaction_list.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,28 +15,82 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final List<Transaction> _userTransactions = [
+    Transaction(
+      id: 't1',
+      title: 'New Shoes',
+      amount: 69.99,
+      date: DateTime.now(),
+    ),
+    Transaction(
+      id: 't2',
+      title: 'Weekly groceries',
+      amount: 29.99,
+      date: DateTime.now(),
+    ),
+  ];
+
+  void _addNewTransaction(String txTitle, double txAmount) {
+    final newTx = Transaction(
+      title: txTitle,
+      amount: txAmount,
+      date: DateTime.now(),
+      id: DateTime.now().toString(),
+    );
+
+    setState(() {
+      _userTransactions.add(newTx);
+    });
+  }
+
+  void _startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      builder: (_) {
+        return NewTransaction(_addNewTransaction);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
         title: Text('Store App'),
-      ),
-      body: Column(
-        // mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            child: Card(
-              color: Colors.blue,
-              child: Text('CART!'),
-              elevation: 5,
-            ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {},
           ),
-          UserTransactions()
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              child: Card(
+                color: Colors.blue,
+                child: Text('CART!'),
+                elevation: 5,
+              ),
+            ),
+            TransactionList(_userTransactions),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {},
       ),
     );
   }
